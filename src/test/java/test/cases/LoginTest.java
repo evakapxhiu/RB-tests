@@ -1,36 +1,51 @@
 package test.cases;
-
 import base.tests.BaseTests;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.PageFactory;
 import pages.HomePage;
 import pages.LoginPage;
-
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import static org.junit.jupiter.api.Assertions.*;
 public class LoginTest extends BaseTests {
-
-    @Test
-    public void logInSuccessful(){
+    private LoginPage loginPage;
+    private HomePage homePage;
+    @BeforeEach
+    public void beforeEach() {
         driver.get(BASE_URL);
-        driver.manage().timeouts().implicitlyWait( 5, TimeUnit.SECONDS);
-        LoginPage loginPage=new LoginPage(driver);
+        loginPage=new LoginPage(driver);
+    }
+    @Test
+    public void logInSuccessfulTest() {
         loginPage.logInDetails("stuart","Test123");
-        HomePage homePage=loginPage.clickButton();
+        homePage=loginPage.clickButton();
         assertTrue(homePage.isLogIn());
     }
     @Test
-    public void logInUnsuccessful(){
-        driver.get(BASE_URL);
-        driver.manage().timeouts().implicitlyWait( 5, TimeUnit.SECONDS);
-        LoginPage loginPage=new LoginPage(driver);
+    public void logInUnsuccessfulTest() {
         loginPage.logInWithEmptyFields();
         WebElement message=driver.findElement(By.xpath("//*[@id='panelUsernamePassword']//*[@class='error-container']"));
         assertEquals("Username is required.,Password is required.",message.getText());
+    }
+    @Test
+    public void loginWithEmptyUsernameFieldTest() {
+        loginPage.loginWithEmptyUsernameField("Test123");
+        WebElement message=driver.findElement(By.xpath("//*[@id='panelUsernamePassword']//*[@class='error-container']"));
+        assertEquals("Username is required.",message.getText());
+    }
+    @Test
+    public void loginWithEmptyPasswordFieldTest() {
+        loginPage.loginWithEmptyPassField("stuart");
+        WebElement message=driver.findElement(By.xpath("//*[@id='panelUsernamePassword']//*[@class='error-container']"));
+        assertEquals("Password is required.",message.getText());
+    }
+    @Test
+    public void logInWithWrongCredentialsTest() {
+        loginPage.logInWithWrongCredentials("eva","pass");
+        homePage=loginPage.clickButton();
+
+        WebElement message=driver.findElement(By.xpath("//div[@id='panelUsernamePassword']//*[text()='Wrong input data.']"));
+        assertEquals( "Wrong input data.",message.getText());
     }
 }

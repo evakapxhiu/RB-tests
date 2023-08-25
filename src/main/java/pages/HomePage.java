@@ -1,91 +1,86 @@
 package pages;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.How;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
 public class HomePage {
     private WebDriver driver;
-    private By homePage = By.className("menu-open");
-    private By hideButton=By.xpath("//*[@data-resource-key='Widgets.AccountBalancePreview.HideAccounts']");
     public HomePage(WebDriver driver) {
+        PageFactory.initElements(driver, this);
         this.driver = driver;
     }
-
-        public void waitForSpinner(){
-        WebDriverWait waitDriver=new WebDriverWait(driver, Duration.ofSeconds(20));
-        waitDriver.until(
-                ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("div.spinner"))
-        );
-    }
+    @FindBy(how=How.CLASS_NAME,
+            using = "menu-open")
+    private WebElement homePage;
     public boolean isLogIn() {
         waitForSpinner();
         try {
-            return driver.findElement(homePage).isDisplayed();
+            return homePage.isDisplayed();
         } catch (NoSuchElementException e) {
             return false;
         }
     }
-    public void clickShowMoreAccounts(){
+    //HOME PAGE , TOP MENU BAR
+    @FindBy(how=How.XPATH,
+            using = "//ul[@class='top-actions']//a[@data-bind='attr: { href: url1 }']")
+    private WebElement myAccountButton;
+    @FindBy(how = How.XPATH,
+            using = "//ul[@class='top-actions']//li[3]")
+    private WebElement payBillsButton;
+    public AccountsPage clickCheckMyAccounts() {
         waitForSpinner();
-        WebDriverWait waitDriver=new WebDriverWait(driver, Duration.ofSeconds(20));
-        WebElement show = driver.findElement(By.xpath("//a[@data-bind='click: showMoreAccounts']"));
-        waitDriver.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@data-bind='click: showMoreAccounts']")));
-        show.click();
+        myAccountButton.click();
+        return new AccountsPage(driver);
     }
-    public boolean hideButtonIsVisible(){
+    public BillsPage clickPayBills() {
         waitForSpinner();
+        payBillsButton.click();
+        return new BillsPage(driver);
+    }
+    //LIST WITH MY ACCOUNTS (SHOW MORE ACCOUNTS)
+    @FindBy(how=How.XPATH,
+            using = "//ul[@class='top-actions']//li[2]")
+    private WebElement makePaymentButton;
+    @FindBy(how=How.XPATH,
+            using = "//a[@data-bind='click: showMoreAccounts']")
+    private WebElement showMoreButton;
+    @FindBy(how=How.XPATH,
+            using = "//*[@class='less'][text()='Hide accounts']")
+    private WebElement hideButton;
+    public void clickMakePayment(){
+        makePaymentButton.click();
+        WebDriverWait wait=new WebDriverWait(driver,Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.elementToBeClickable(makePaymentButton));
+    }
+    public void clickShowMoreButton() {
+        waitForSpinner();
+     showMoreButton.click();
+    }
+    public void clickHideButton() {
+        hideButton.click();
+    }
+    public boolean hideButtonIsDisplayed(){
         try {
-            return driver.findElement(hideButton).isDisplayed();
-        } catch (NoSuchElementException e) {
+            return hideButton.isDisplayed();
+        }catch (Exception e){
+            e.getStackTrace();
             return false;
         }
     }
-    public List<Integer> listWithAccountsIsVisible(){
-//        waitForSpinner();
+    //----GENERAL METHODS----
+    public void waitForSpinner() {
         WebDriverWait waitDriver=new WebDriverWait(driver, Duration.ofSeconds(20));
-        List<WebElement> accounts = driver.findElements(By.xpath("//ul[@data-bind='foreach: accounts']//li"));
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-//        waitDriver.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ul[@data-bind='foreach: accounts']//li")));
-        return Collections.singletonList(accounts.size());
+        waitDriver.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("div.spinner")));
     }
-    public void clickButton(){
-        waitForSpinner();
-        WebDriverWait waitDriver=new WebDriverWait(driver, Duration.ofSeconds(20));
-        WebElement buttonPay= driver.findElement(By.xpath("//a[@data-bind='click: $root.goToPayment']"));
-        waitDriver.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@data-bind='click: $root.goToPayment']")));
-        buttonPay.click();
-    }
-
-    public boolean payments(){
-        waitForSpinner();
-        try {
-            return driver.findElement(By.xpath("//*[@id='widget_148402']")).isDisplayed();
-        } catch (NoSuchElementException e) {
-            return false;
-        }
-    }
-
-    private Select findDropEle(){
-        return new Select(driver.findElement(By.xpath("")));
-    }
-    public void selectDropDown(String option){
-        findDropEle().selectByVisibleText(option);
-    }
-    public List<String> getSelectedOption(){
-        List<WebElement> selectedEl = findDropEle().getAllSelectedOptions();
-        return selectedEl.stream().map(e->e.getText()).collect(Collectors.toList());
-    }
-
-
 }
