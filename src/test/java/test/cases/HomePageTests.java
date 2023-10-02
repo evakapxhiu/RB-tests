@@ -24,7 +24,7 @@ public class HomePageTests extends BaseTests {
         accountsPage=new AccountsPage(driver);
         homePage=new HomePage(driver);
         billsPage=new BillsPage(driver);
-        loginPage.logInDetails("stuart","Test123");
+        loginPage.logInDetails("bobbie","Test123");
         loginPage.clickButton();
 }
     //HOME PAGE , TOP MENU BAR

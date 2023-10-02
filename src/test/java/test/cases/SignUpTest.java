@@ -6,6 +6,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import pages.SignUpPage;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class SignUpTest extends BaseTests {
     @BeforeEach
     public void beforeEach() {
@@ -29,5 +31,12 @@ public class SignUpTest extends BaseTests {
         signUpPage.signUpWithInvalidMobNumberAndEmail("Eva","Kapxhiu","K1234567K","0645122343","prov");
         WebElement message=driver.findElement(By.xpath( "(//span[@class='validationMessage'])[5]"));
         assertEquals("Please supply valid email address!",message.getText());
+    }
+    @Test
+    public void popUpQuestionMark() {
+        signUpPage.contextMenu();
+//        assertTrue(signUpPage.isPopUpDisplayed());
+//        assertEquals("PERSONAL NUMBER",signUpPage.popUpText());
+        assertTrue(signUpPage.image().length()>0);
     }
 }

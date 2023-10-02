@@ -18,7 +18,7 @@ public class LoginTest extends BaseTests {
     }
     @Test
     public void logInSuccessfulTest() {
-        loginPage.logInDetails("stuart","Test123");
+        loginPage.logInDetails("bobbie","Test123");
         homePage=loginPage.clickButton();
         assertTrue(homePage.isLogIn());
     }
@@ -36,7 +36,7 @@ public class LoginTest extends BaseTests {
     }
     @Test
     public void loginWithEmptyPasswordFieldTest() {
-        loginPage.loginWithEmptyPassField("stuart");
+        loginPage.loginWithEmptyPassField("bobbie");
         WebElement message=driver.findElement(By.xpath("//*[@id='panelUsernamePassword']//*[@class='error-container']"));
         assertEquals("Password is required.",message.getText());
     }
